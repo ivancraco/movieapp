@@ -20,16 +20,20 @@ import java.util.*
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
+    private lateinit var binding: FragmentHomeBinding
     private lateinit var movieAdapter: Adapter
     private lateinit var serieAdapter: Adapter
-    private lateinit var binding: FragmentHomeBinding
     private lateinit var viewPager2: ViewPager2
     private lateinit var movieRecyclerView: RecyclerView
     private lateinit var serieRecyclerView: RecyclerView
     private val mainVieModel: MainViewModel by activityViewModels()
-    private var currentCoruselPosition = 1
+    private var currentCoruselPosition = CURRENT_CAROUSEL_POSITION
     private var fragmentAdapter: FragmentAdapter? = null
     private var timer: Timer? = null
+
+    companion object {
+        const val CURRENT_CAROUSEL_POSITION = 1
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -146,7 +150,7 @@ class HomeFragment : Fragment() {
 
     private fun setViewPager() {
         with(viewPager2) {
-            offscreenPageLimit = 4
+            offscreenPageLimit = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT
             setCurrentItem(currentCoruselPosition, false)
             isSaveEnabled = false
         }
@@ -188,11 +192,15 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         cancelTimer()
-        /** */
+        setCurrentItemOnScreen()
+        super.onDestroyView()
+    }
+
+    /** Ensure that the current page of the ViewPager2 is completely
+     * set to the screen in case of a bug */
+    private fun setCurrentItemOnScreen() {
         viewPager2.setCurrentItem(currentCoruselPosition - 1, false)
         viewPager2.setCurrentItem(currentCoruselPosition + 1, false)
-        viewPager2.offscreenPageLimit = 1
-        super.onDestroyView()
     }
 
     private fun cancelTimer() {
