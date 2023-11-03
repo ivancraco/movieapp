@@ -1,0 +1,27 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.MovieApp" parent="Theme.AppCompat.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorOnPrimary">@color/primary_color_text</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/green</item>
+        <item name="colorOnSecondary">@color/primary_color_text</item>
+        <!-- Status bar color. -->
+        <item name="android:fontFamily">@font/helvetica</item>
+        <item name="android:statusBarColor">@color/primary_color</item>
+        <item name="android:textColorHint">@color/grey</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <!-- <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        -->
+    </style>
+
+    <style name="Theme.MovieApp.SplashTheme">
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+        <item name="postSplashScreenTheme">@style/Theme.MovieApp</item>
+    </style>
+
+</resources>

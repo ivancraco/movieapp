@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="movies_subtitle">Películas</string>
+    <string name="series_subtitle">Series</string>
+    <string name="see_now">Ver ahora</string>
+    <string name="home">Principal</string>
+    <string name="search">Buscar</string>
+    <string name="query_hint">p.ej. Godzilla</string>
+    <string name="textEmpty">Busca películas y series</string>
+    <string name="type_movie">Película</string>
+    <string name="type_serie">Serie</string>
+    <string name="image_detail">Imagen de la respuesta</string>
+</resources>
