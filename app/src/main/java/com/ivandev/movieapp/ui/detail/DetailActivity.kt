@@ -49,7 +49,7 @@ class DetailActivity : AppCompatActivity() {
 
     private fun initUI() {
         setBinding()
-        progressBarVisibilityPostDelayed(200)
+        progressBarVisibilityPostDelayed()
         getIntentValues()
         setLanguage()
         getDetails()
@@ -57,10 +57,10 @@ class DetailActivity : AppCompatActivity() {
 
     private fun getDetails() {
         when (typeSearch) {
-            MovieEnum.MOVIE.toString() -> {
+            MovieEnum.MOVIE.type -> {
                 getDetails(id, language, MovieEnum.MOVIE)
             }
-            MovieEnum.Serie.toString() -> {
+            MovieEnum.Serie.type -> {
                 getDetails(id, language, MovieEnum.Serie)
             }
         }
@@ -74,12 +74,12 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun progressBarVisibilityPostDelayed(time: Long) {
+    private fun progressBarVisibilityPostDelayed() {
         Handler(Looper.getMainLooper()).postDelayed({
             if (loading) {
                 showProgressBarVisibility()
             }
-        }, time)
+        }, 200)
     }
 
     private fun setBinding() {
