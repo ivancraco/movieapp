@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setNavController() {
-        navHostFragment = supportFragmentManager.findFragmentById(R.id.fMain) as NavHostFragment
+        navHostFragment = supportFragmentManager.findFragmentById(R.id.fcv) as NavHostFragment
         navController = navHostFragment.navController
     }
 

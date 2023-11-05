@@ -7,7 +7,7 @@
     tools:context=".ui.main.fragment.CoruselFragment">
 
     <ImageView
-        android:id="@+id/ivSlide"
+        android:id="@+id/ivCarousel"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
@@ -17,7 +17,7 @@
         android:layout_gravity="start"
         android:scaleType="centerCrop"
         android:src="@drawable/back_item"
-        android:contentDescription="Movie image" />
+        android:contentDescription="@string/image_detail" />
 
 
     <View
@@ -29,35 +29,34 @@
         android:background="@drawable/bottom_shadow" />
 
     <TextView
-        android:id="@+id/tvSlide"
+        android:id="@+id/tvCarousel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/btnSlide"
+        app:layout_constraintBottom_toTopOf="@+id/btnCarousel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="1"
+        android:textColor="@color/primary_color_text"
+        android:fontFamily="@font/helvetica_bold"
         android:gravity="center"
         android:ellipsize="end"
         android:maxLines="1"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        tools:text="Title"
-        android:textColor="@color/primary_color_text"
-        android:fontFamily="@font/helvetica_bold"
-        app:layout_constraintVertical_bias="0.99" />
+        android:layout_marginBottom="8dp"
+        tools:text="Title" />
 
     <Button
-        android:id="@+id/btnSlide"
+        android:id="@+id/btnCarousel"
         android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        android:backgroundTint="@color/green"
-        android:text="@string/see_now"
-        android:textColor="@color/primary_color_text"
-        android:textSize="12sp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        android:backgroundTint="@color/green"
+        android:text="@string/see_now"
+        android:textColor="@color/primary_color_text"
+        android:textSize="12sp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

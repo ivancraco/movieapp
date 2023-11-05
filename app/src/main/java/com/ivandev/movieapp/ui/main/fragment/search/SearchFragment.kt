@@ -90,8 +90,8 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun setBinding() {
         paginedRecyclerView = binding.rvSearch
-        searchView = binding.searchMain
-        textViewNoResults = binding.textView
+        searchView = binding.searchView
+        textViewNoResults = binding.tvEmpty
         progressBar = binding.progressBar
         progressBar.isSaveEnabled = false
     }

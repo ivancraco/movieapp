@@ -21,24 +21,24 @@ class SearchViewHolder(view: View, private val onSelectedItem: (ResultModel) -> 
         binding.tvTitle.text = item.title
         when (item.type) {
             MovieEnum.MOVIE -> {
-                binding.tvField.text = binding.tvField.context.getString(R.string.type_movie)
+                binding.tvType.text = binding.tvType.context.getString(R.string.type_movie)
 
             }
             MovieEnum.Serie -> {
-                binding.tvField.text = binding.tvField.context.getString(R.string.type_serie)
+                binding.tvType.text = binding.tvType.context.getString(R.string.type_serie)
             }
         }
         val poster = item.poster_path
         if (poster.isEmpty()) {
-            binding.ivCover.setImageResource(R.drawable.back_item)
+            binding.ivPoster.setImageResource(R.drawable.back_item)
         } else {
             val url = "https://image.tmdb.org/t/p/w342/${poster}"
             try {
                 Glide
-                    .with(binding.ivCover.context)
+                    .with(binding.ivPoster.context)
                     .load(url)
                     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                    .into(binding.ivCover)
+                    .into(binding.ivPoster)
             } catch (fnfe: FileNotFoundException) {
                 Log.d("IvanDev", "File not found")
             }

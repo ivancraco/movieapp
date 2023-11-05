@@ -35,7 +35,7 @@ class CoruselFragment(val movie: ResultModel) : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         inflateView(inflater, container)
         initUI()
         return binding.root
@@ -43,11 +43,11 @@ class CoruselFragment(val movie: ResultModel) : Fragment() {
 
     private fun initUI() {
         val url = "https://image.tmdb.org/t/p/w780/${movie.poster_path}"
-        binding.tvSlide.text = movie.title
-        Glide.with(binding.ivSlide.context)
+        binding.tvCarousel.text = movie.title
+        Glide.with(binding.ivCarousel.context)
             .load(url)
-            .into(binding.ivSlide)
-        binding.btnSlide.setOnClickListener { seeDetail(requireContext(), movie) }
+            .into(binding.ivCarousel)
+        binding.btnCarousel.setOnClickListener { seeDetail(requireContext(), movie) }
     }
 
     private fun inflateView(inflater: LayoutInflater, container: ViewGroup?) {

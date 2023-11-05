@@ -3,8 +3,7 @@ package com.ivandev.movieapp.core.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
-import com.ivandev.movieapp.databinding.ViewMovieItemBinding
+import com.ivandev.movieapp.databinding.MovieItemBinding
 import com.ivandev.movieapp.domain.model.ResultModel
 
 class Adapter(
@@ -12,10 +11,8 @@ class Adapter(
     private val onClickMovie: (ResultModel) -> Unit
 ) : RecyclerView.Adapter<ViewHolder>() {
 
-    private lateinit var binding: ViewBinding
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = ViewMovieItemBinding.inflate(
+        val binding = MovieItemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false

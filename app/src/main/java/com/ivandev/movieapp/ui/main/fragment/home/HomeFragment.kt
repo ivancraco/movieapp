@@ -62,8 +62,8 @@ class HomeFragment : Fragment() {
 
     private fun setBinding() {
         viewPager2 = binding.viewPager2
-        movieRecyclerView = binding.recyclerMovie
-        serieRecyclerView = binding.recyclerPlaying
+        movieRecyclerView = binding.rvMovies
+        serieRecyclerView = binding.rvSeries
     }
 
     private fun setSerieAdapter() {
