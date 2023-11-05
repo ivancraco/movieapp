@@ -32,16 +32,11 @@
                 android:id="@+id/tvMovies"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="@style/StyledTextView"
                 android:layout_gravity="start"
                 android:layout_marginTop="90dp"
                 android:layout_marginBottom="5dp"
-                android:fontFamily="@font/helvetica_bold"
-                android:gravity="start"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:text="@string/movies_subtitle"
-                android:textColor="@color/primary_color_text"
-                android:textSize="16sp" />
+                android:text="@string/movies_subtitle" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvMovies"
@@ -55,16 +50,11 @@
                 android:id="@+id/tvSeries"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="@style/StyledTextView"
                 android:layout_gravity="start"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="5dp"
-                android:fontFamily="@font/helvetica_bold"
-                android:gravity="start"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:text="@string/series_subtitle"
-                android:textColor="@color/primary_color_text"
-                android:textSize="16sp" />
+                android:text="@string/series_subtitle" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvSeries"
