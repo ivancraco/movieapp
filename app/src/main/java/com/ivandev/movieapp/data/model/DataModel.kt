@@ -7,14 +7,14 @@ import com.ivandev.movieapp.domain.model.ResultModel
 sealed class DataModel {
     data class Movie(
         @SerializedName("id") val id: Int,
-        @SerializedName("poster_path") val poster_path: String,
-        @SerializedName("title") val title: String
+        @SerializedName("poster_path") val poster_path: String?,
+        @SerializedName("title") val title: String?
     ) : DataModel() {
         fun toDomain(): ResultModel {
             return ResultModel(
                 id = id,
-                poster_path = poster_path,
-                title = title,
+                poster_path = poster_path ?: "",
+                title = title ?: "",
                 type = MovieEnum.MOVIE
             )
         }
@@ -22,14 +22,14 @@ sealed class DataModel {
 
     data class Serie(
         @SerializedName("id") val id: Int,
-        @SerializedName("poster_path") val poster_path: String,
-        @SerializedName("name") val title: String
+        @SerializedName("poster_path") val poster_path: String?,
+        @SerializedName("name") val title: String?
     ) : DataModel() {
         fun toDomain(): ResultModel {
             return ResultModel(
                 id = id,
-                poster_path = poster_path,
-                title = title,
+                poster_path = poster_path ?: "",
+                title = title ?: "",
                 type = MovieEnum.Serie
             )
         }
