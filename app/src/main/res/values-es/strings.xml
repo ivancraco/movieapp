@@ -10,4 +10,6 @@
     <string name="type_movie">Película</string>
     <string name="type_serie">Serie</string>
     <string name="image_detail">Imagen de la respuesta</string>
+    <string name="retry">Reintentar</string>
+    <string name="error">Error</string>
 </resources>

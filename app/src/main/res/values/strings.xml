@@ -14,4 +14,6 @@
     <string name="type_movie">Movie</string>
     <string name="type_serie">Serie</string>
     <string name="image_detail">Response image</string>
+    <string name="retry">Retry</string>
+    <string name="error">Error</string>
 </resources>
