@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.ivandev.movieapp.R
+import com.ivandev.movieapp.core.common.CheckNetwork
 import com.ivandev.movieapp.data.response.MovieGenre
 import com.ivandev.movieapp.databinding.ActivityDetailBinding
 import com.ivandev.movieapp.domain.model.DetailModel
@@ -49,10 +50,22 @@ class DetailActivity : AppCompatActivity() {
 
     private fun initUI() {
         setBinding()
-        progressBarVisibilityPostDelayed()
-        getIntentValues()
-        setLanguage()
-        getDetails()
+        checkConnection()
+    }
+
+    private fun checkConnection() {
+        if (CheckNetwork.isConected(this)) {
+            progressBarVisibilityPostDelayed()
+            getIntentValues()
+            setLanguage()
+            getDetails()
+            binding.noConnection.llNoConnection.isVisible = false
+        } else {
+            binding.noConnection.llNoConnection.isVisible = true
+            binding.noConnection.btnNoConnection.setOnClickListener {
+                checkConnection()
+            }
+        }
     }
 
     private fun getDetails() {
