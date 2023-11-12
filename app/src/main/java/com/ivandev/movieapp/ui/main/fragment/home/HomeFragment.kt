@@ -5,12 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.ivandev.movieapp.core.adapter.Adapter
 import com.ivandev.movieapp.core.adapter.FragmentAdapter
+import com.ivandev.movieapp.core.common.CheckNetwork
 import com.ivandev.movieapp.databinding.FragmentHomeBinding
 import com.ivandev.movieapp.domain.model.ResultModel
 import com.ivandev.movieapp.ui.main.MainViewModel
@@ -26,6 +29,7 @@ class HomeFragment : Fragment() {
     private lateinit var viewPager2: ViewPager2
     private lateinit var movieRecyclerView: RecyclerView
     private lateinit var serieRecyclerView: RecyclerView
+    private lateinit var btnNoConnection: Button
     private val mainVieModel: MainViewModel by activityViewModels()
     private var currentCoruselPosition = CURRENT_CAROUSEL_POSITION
     private var fragmentAdapter: FragmentAdapter? = null
@@ -54,16 +58,39 @@ class HomeFragment : Fragment() {
 
     private fun initUI() {
         setBinding()
+        btnNoConnectionListener()
         setViewPager()
         setMovieAdapter()
         setSerieAdapter()
-        dataResponseObserver()
+        checkNetwork()
+    }
+
+    private fun btnNoConnectionListener() {
+        btnNoConnection.setOnClickListener {
+            noConnectionListener()
+        }
+    }
+
+    private fun checkNetwork() {
+        val isConnected = CheckNetwork.isConected(requireContext())
+        if (isConnected) {
+            dataResponseObserver()
+            binding.noConnection.llNoConnection.isVisible = false
+        } else {
+            binding.nsvMain.visibility = View.INVISIBLE
+            binding.noConnection.llNoConnection.isVisible = true
+        }
+    }
+
+    private fun noConnectionListener() {
+        checkNetwork()
     }
 
     private fun setBinding() {
         viewPager2 = binding.viewPager2
         movieRecyclerView = binding.rvMovies
         serieRecyclerView = binding.rvSeries
+        btnNoConnection = binding.noConnection.btnNoConnection
     }
 
     private fun setSerieAdapter() {
@@ -85,6 +112,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun dataResponseObserver() {
+        mainVieModel.onCreate()
+        binding.pb.isVisible = true
         movieObserver()
         serieObserver()
         movieCarouselObserver()
@@ -94,6 +123,8 @@ class HomeFragment : Fragment() {
     private fun responseReadyObserver() {
         mainVieModel.repositoryResponseReady.observe(viewLifecycleOwner) {
             if (it) {
+                binding.pb.isVisible = false
+                binding.nsvMain.isVisible = true
                 initTimerAutoSlide()
                 mainVieModel.repositoryResponseReady.removeObservers(viewLifecycleOwner)
             }
@@ -102,23 +133,24 @@ class HomeFragment : Fragment() {
 
     private fun movieCarouselObserver() {
         mainVieModel.movieCarousel.observe(viewLifecycleOwner) { resultModelList ->
-            createModelCarousel(resultModelList as MutableList<ResultModel>)
-            setFragmentadapter(resultModelList)
-            setViewPagerListener(resultModelList)
+            if (resultModelList.isNotEmpty()) {
+                createModelCarousel(resultModelList as MutableList<ResultModel>)
+                setFragmentadapter(resultModelList)
+                setViewPagerListener(resultModelList)
+                mainVieModel.movieCarousel.removeObservers(viewLifecycleOwner)
+            }
         }
     }
 
     private fun serieObserver() {
         mainVieModel.topRatedSeries.observe(viewLifecycleOwner) {
             updateSerieAdapter(it)
-            mainVieModel.topRatedSeries.removeObservers(viewLifecycleOwner)
         }
     }
 
     private fun movieObserver() {
         mainVieModel.topRatedMovies.observe(viewLifecycleOwner) {
             updateMovieAdapter(it)
-            mainVieModel.topRatedMovies.removeObservers(viewLifecycleOwner)
         }
     }
 

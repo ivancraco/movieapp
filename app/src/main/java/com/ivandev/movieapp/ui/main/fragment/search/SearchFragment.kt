@@ -7,15 +7,19 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.SearchView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ivandev.movieapp.R
+import com.ivandev.movieapp.core.common.CheckNetwork
 import com.ivandev.movieapp.core.paging.LoaderAdapter
 import com.ivandev.movieapp.databinding.FragmentSearchBinding
+import com.ivandev.movieapp.ui.main.MainViewModel
 import com.ivandev.movieapp.ui.main.fragment.common.SeeDetail
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -32,7 +36,7 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var progressBar: ProgressBar
     private lateinit var searchView: SearchView
     private lateinit var textViewNoResults: TextView
-    private val searchViewModel: SearchViewModel by viewModels()
+    private val searchViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -49,6 +53,20 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
                 pagingSearchAdapter.submitData(it)
             }
         }
+    }
+
+    override fun onStart() {
+        val targetPosition = searchViewModel.searchAdapterPosition
+        paginedRecyclerView.scrollToPosition(targetPosition)
+        if (!CheckNetwork.isConected(requireContext())) {
+            searchViewModel.searchByQuery("")
+        } else {
+            if (searchViewModel.fetchAgain) {
+                searchViewModel.searchByQuery(searchViewModel.query)
+                searchViewModel.fetchAgain = false
+            }
+        }
+        super.onStart()
     }
 
     private fun setUI() {
@@ -93,7 +111,6 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
         searchView = binding.searchView
         textViewNoResults = binding.tvEmpty
         progressBar = binding.progressBar
-        progressBar.isSaveEnabled = false
     }
 
     private fun setPagingSearchStateListener() {
@@ -109,7 +126,6 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
             } else {
                 textViewNoResults.isVisible = false
             }
-
         }
     }
 
@@ -126,7 +142,9 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
             override fun getSpanSize(position: Int): Int {
                 return if (position == 0 && headerAdapter.itemCount > 0) {
                     2
-                } else if (position == pagingSearchAdapter.itemCount && footerAdapter.itemCount > 0) {
+                } else if (position == pagingSearchAdapter.itemCount
+                    && footerAdapter.itemCount > 0
+                ) {
                     2
                 } else {
                     1
@@ -140,12 +158,37 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        paginedRecyclerView.scrollToPosition(0)
-        val searchQuery = query ?: ""
-        searchViewModel.searchByQuery(searchQuery)
+        if (CheckNetwork.isConected(requireContext())) {
+            searchViewModel.cancelPagingSource()
+            paginedRecyclerView.scrollToPosition(0)
+            val searchQuery = query ?: ""
+            searchViewModel.searchByQuery(searchQuery)
+        } else {
+            searchViewModel.searchByQuery("")
+            Toast.makeText(
+                requireContext(),
+                activity?.getString(R.string.no_connection_message),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
         return false
     }
 
     override fun onQueryTextChange(newText: String?): Boolean = false
+
+    override fun onStop() {
+        val targetPosition = gridLayoutManager.findFirstVisibleItemPosition()
+        searchViewModel.searchAdapterPosition = targetPosition
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        if (!CheckNetwork.isConected(requireContext())) {
+            searchViewModel.cancelPagingSource()
+            searchViewModel.searchAdapterPosition = 0
+            searchViewModel.fetchAgain = true
+        }
+        super.onDestroy()
+    }
 
 }
