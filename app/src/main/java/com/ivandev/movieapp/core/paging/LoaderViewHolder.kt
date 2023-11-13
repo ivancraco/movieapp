@@ -13,7 +13,6 @@ class LoaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         binding.progressBar.isVisible = loadState is LoadState.Loading
         binding.errorText.isVisible = loadState is LoadState.Error
         binding.buttonRetry.isVisible = loadState is LoadState.Error
-
         binding.buttonRetry.setOnClickListener { retry() }
     }
 }
