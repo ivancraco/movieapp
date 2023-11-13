@@ -68,4 +68,20 @@
 
     </androidx.core.widget.NestedScrollView>
 
+    <include
+        android:id="@+id/noConnection"
+        layout="@layout/no_connection" />
+
+    <ProgressBar
+        android:id="@+id/pb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:indeterminateTint="@color/green"
+        android:indeterminate="true"
+        android:visibility="gone" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

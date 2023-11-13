@@ -119,4 +119,8 @@
         android:indeterminateTint="@color/green"
         android:visibility="gone" />
 
+    <include
+        android:id="@+id/noConnection"
+        layout="@layout/no_connection" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
