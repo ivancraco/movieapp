@@ -47,16 +47,12 @@
 
     <Button
         android:id="@+id/btnCarousel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/StyledButton"
+        android:text="@string/see_now"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        android:backgroundTint="@color/green"
-        android:text="@string/see_now"
-        android:textColor="@color/primary_color_text"
-        android:textSize="12sp" />
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
