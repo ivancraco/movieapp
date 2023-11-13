@@ -4,6 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import com.ivandev.movieapp.core.paging.MoviePagingSource
 import com.ivandev.movieapp.domain.Repository
 import com.ivandev.movieapp.domain.model.ResultModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +34,28 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     val movieCarousel: LiveData<List<ResultModel>>
         get() = _movieCarousel
 
+    private var moviePagingSource: MoviePagingSource? = null
+        get() {
+            if (field == null || field?.invalid == true) {
+                field = MoviePagingSource(repository, query)
+            }
+            return field
+        }
+
+    val pager = Pager(
+        PagingConfig(
+            pageSize = 40,
+            maxSize = 120,
+            enablePlaceholders = false
+        )
+    ) {
+        moviePagingSource!!
+    }.flow.cachedIn(viewModelScope)
+
+    var searchAdapterPosition = 0
+    var fetchAgain = false
+    var query = ""
+
     fun onCreate() {
         _repositoryResponseReady.postValue(false)
         viewModelScope.launch {
@@ -53,5 +79,14 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
             deferreds.awaitAll()
             _repositoryResponseReady.postValue(true)
         }
+    }
+
+    fun searchByQuery(querySearch: String) {
+        query = querySearch
+        cancelPagingSource()
+    }
+
+    fun cancelPagingSource() {
+        moviePagingSource?.invalidate()
     }
 }
