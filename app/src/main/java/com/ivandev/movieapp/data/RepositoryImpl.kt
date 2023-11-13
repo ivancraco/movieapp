@@ -34,7 +34,6 @@ class RepositoryImpl @Inject constructor(private val apiService: ApiService) : R
         runCatching { apiService.getMovieByQuery(query, page, "2866e74fe4d2c2e7d7b08e997f990809") }
             .onSuccess { return it.toDomain() }
             .onFailure {
-                Log.i("IvanDev", "Error: ${it.message}")
                 if (it.message == "StandaloneCoroutine was cancelled") {
                     return null
                 } else {
