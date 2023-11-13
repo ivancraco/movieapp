@@ -33,14 +33,27 @@ class RepositoryImpl @Inject constructor(private val apiService: ApiService) : R
     override suspend fun getMovieByQuery(query: String, page: Int): MovieResult? {
         runCatching { apiService.getMovieByQuery(query, page, "2866e74fe4d2c2e7d7b08e997f990809") }
             .onSuccess { return it.toDomain() }
-            .onFailure { Log.i("IvanDev", "Error: ${it.message}") }
+            .onFailure {
+                Log.i("IvanDev", "Error: ${it.message}")
+                if (it.message == "StandaloneCoroutine was cancelled") {
+                    return null
+                } else {
+                    getMovieByQuery(query, page)
+                }
+            }
         return null
     }
 
     override suspend fun getSerieByQuery(query: String, page: Int): MovieResult? {
         runCatching { apiService.getSerieByQuery(query, page, "2866e74fe4d2c2e7d7b08e997f990809") }
             .onSuccess { return it.toDomain() }
-            .onFailure { Log.i("IvanDev", "Error: ${it.message}") }
+            .onFailure {
+                if (it.message == "StandaloneCoroutine was cancelled") {
+                    return null
+                } else {
+                    getSerieByQuery(query, page)
+                }
+            }
         return null
     }
 
