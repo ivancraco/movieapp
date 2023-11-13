@@ -12,4 +12,5 @@
     <string name="image_detail">Imagen de la respuesta</string>
     <string name="retry">Reintentar</string>
     <string name="error">Error</string>
+    <string name="no_connection_message">Sin conexión</string>
 </resources>
