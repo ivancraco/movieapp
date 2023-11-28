@@ -12,12 +12,11 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(private val apiService: ApiService) : Repository {
-
     companion object {
         const val API_KEY = "2866e74fe4d2c2e7d7b08e997f990809"
     }
 
-    override suspend fun getPopularMovies(): MovieResult? {
+    override suspend fun popularMovies(): MovieResult? {
         runCatching { apiService.popularMovies(API_KEY) }
             .onSuccess { return it.toDomain() }
             .onFailure { Log.i("IvanDev", "Error: ${it.message}") }

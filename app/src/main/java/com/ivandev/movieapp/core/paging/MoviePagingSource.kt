@@ -33,11 +33,11 @@ class MoviePagingSource(
 
             val movieData = movieResponse[0].results
             val serieData = movieResponse[1].results
-
             val response = mutableListOf<ResultModel>()
             response.addAll(movieData)
             response.addAll(serieData)
             response.sortBy { it.title }
+
             if (hasOddElement(response)) {
                 val resultModel = removeOddElement(response)
                 response.remove(resultModel)
