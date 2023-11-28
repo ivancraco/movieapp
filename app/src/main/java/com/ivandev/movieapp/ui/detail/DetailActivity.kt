@@ -3,17 +3,20 @@ package com.ivandev.movieapp.ui.detail
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.ivandev.movieapp.R
-import com.ivandev.movieapp.core.common.CheckNetwork
 import com.ivandev.movieapp.data.response.MovieGenre
 import com.ivandev.movieapp.databinding.ActivityDetailBinding
 import com.ivandev.movieapp.domain.model.DetailModel
@@ -25,16 +28,16 @@ import java.util.*
 @AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
+    private lateinit var noConnectionLayout: LinearLayout
+    private lateinit var btnNoConnection: Button
     private lateinit var progressBar: ProgressBar
+    private var searchId = 0
+    private var searchModel: String? = null
     private val detailViewModel: DetailViewModel by viewModels()
-    private var language = ""
-    private var typeSearch: String? = null
-    private var id = 0
-    private var loading = true
 
     companion object {
-        const val TYPESEARCH = "TYPESEARCH"
         const val SEARCH_ID = "SEARCH_ID"
+        const val SEARCH_MODEL = "SEARCH_MODEL"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,70 +53,88 @@ class DetailActivity : AppCompatActivity() {
 
     private fun initUI() {
         setBinding()
-        checkConnection()
+        btnNoConnectionListener()
+        initUIState()
+        getIntentValues()
+        getDetails()
     }
 
-    private fun checkConnection() {
-        if (CheckNetwork.isConected(this)) {
-            progressBarVisibilityPostDelayed()
-            getIntentValues()
-            setLanguage()
-            getDetails()
-            binding.noConnection.llNoConnection.isVisible = false
-        } else {
-            binding.noConnection.llNoConnection.isVisible = true
-            binding.noConnection.btnNoConnection.setOnClickListener {
-                checkConnection()
+    private fun btnNoConnectionListener() {
+        btnNoConnection.setOnClickListener { getDetails() }
+    }
+
+    private fun initUIState() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                detailViewModel.detailState.collect {
+                    when (it) {
+                        DetailState.Loading -> stateLoading()
+                        is DetailState.Success -> stateSuccess(it)
+                        is DetailState.Error -> stateError()
+                    }
+                }
             }
         }
+    }
+
+    private fun stateSuccess(detailState: DetailState.Success) {
+        setVisibility()
+        setUI(detailState.detailModel)
+    }
+
+    private fun stateLoading() {
+        progressBarVisibilityPostDelayed()
+        noConnectionLayout.isVisible = false
+    }
+
+    private fun stateError() {
+        setVisibility()
     }
 
     private fun getDetails() {
-        when (typeSearch) {
+        when (searchModel) {
             MovieEnum.MOVIE.type -> {
-                getDetails(id, language, MovieEnum.MOVIE)
+                getDetails(searchId, getLanguage(), MovieEnum.MOVIE)
             }
-            MovieEnum.Serie.type -> {
-                getDetails(id, language, MovieEnum.Serie)
+            MovieEnum.SERIE.type -> {
+                getDetails(searchId, getLanguage(), MovieEnum.SERIE)
             }
         }
     }
 
-    private fun setLanguage() {
-        val conName = Locale.getDefault().displayName
-        language = "us-US"
-        if (conName.contains("Español", true)) {
-            language = "es-MX"
-        }
+    private fun getLanguage(): String {
+        val lan = Locale.getDefault().language
+        val con = Locale.getDefault().country
+        return String.format("%s-%s", lan, con)
     }
 
     private fun progressBarVisibilityPostDelayed() {
         Handler(Looper.getMainLooper()).postDelayed({
-            if (loading) {
-                showProgressBarVisibility()
+            if (detailViewModel.detailState.value is DetailState.Loading) {
+                showProgressBar()
             }
         }, 200)
     }
 
     private fun setBinding() {
-        progressBar = binding.cpi
+        progressBar = binding.pb
+        noConnectionLayout = binding.noConnection.llNoConnection
+        btnNoConnection = binding.noConnection.btnNoConnection
     }
 
     private fun getIntentValues() {
-        id = intent.getIntExtra(SEARCH_ID, 0)
-        typeSearch = intent.getStringExtra(TYPESEARCH)
+        searchId = intent.getIntExtra(SEARCH_ID, 0)
+        searchModel = intent.getStringExtra(SEARCH_MODEL)
     }
 
     private fun getDetails(id: Int, language: String, type: MovieEnum) {
         lifecycleScope.launch {
             when (type) {
                 MovieEnum.MOVIE -> {
-                    val movie = detailViewModel.searchMovieByID(id, language)
-                    setUI(movie)
+                    detailViewModel.searchMovieByID(id, language)
                 }
-                MovieEnum.Serie -> {
-                    val serie = detailViewModel.searchSerieByID(id, language)
-                    setUI(serie)
+                MovieEnum.SERIE -> {
+                    detailViewModel.searchSerieByID(id, language)
                 }
             }
         }
@@ -126,16 +147,21 @@ class DetailActivity : AppCompatActivity() {
             seUIValues(movie.title, movie.overview, genres)
             loadItemViewImage(movie.posterPath, imageView)
         }
-        hiddeProgressBarVisibility()
-        loading = false
+        hiddeProgressBar()
     }
 
-    private fun showProgressBarVisibility() {
+    private fun showProgressBar() {
         progressBar.isVisible = true
     }
 
-    private fun hiddeProgressBarVisibility() {
+    private fun hiddeProgressBar() {
         progressBar.isVisible = false
+    }
+
+    private fun setVisibility() {
+        val stateValue = detailViewModel.detailState.value
+        progressBar.isVisible = stateValue is DetailState.Loading
+        noConnectionLayout.isVisible = stateValue is DetailState.Error
     }
 
     private fun seUIValues(resTitle: String, resOverview: String, resGenres: String) {

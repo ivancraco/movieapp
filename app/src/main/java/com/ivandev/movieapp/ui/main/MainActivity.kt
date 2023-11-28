@@ -84,16 +84,14 @@ class MainActivity : AppCompatActivity() {
         splashScreen.setKeepOnScreenCondition { true }
     }
 
-    /*
-    * Agrega un observador a una vista para comprobar
-    * el estado de la información de la api antes de pintar la misma.
-    */
     private fun viewObserver(view: View) {
         view.viewTreeObserver.addOnPreDrawListener(
             object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
-                    val repositoryResponseReady = movieViewModel.repositoryResponseReady.value
-                    return if (repositoryResponseReady == true || !CheckNetwork.isConected(this@MainActivity)) {
+                    val repositoryResponseReady = movieViewModel.mainState.value
+                    return if (repositoryResponseReady is MainState.Finished ||
+                        !CheckNetwork.isConected(this@MainActivity)
+                    ) {
                         view.viewTreeObserver?.removeOnPreDrawListener(this)
                         removeSplashScreenCondition()
                         removeFlagNotTouchable()
