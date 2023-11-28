@@ -22,31 +22,30 @@ class MoviePagingSource(
                 )
             }
             val currentPage = params.key ?: 1
-            val movieResponse = repository.getMovieByQuery(query, currentPage)
-            val serieResponse = repository.getSerieByQuery(query, currentPage)
-            var movieData = movieResponse?.results
-            var serieData = serieResponse?.results
-
-            var response = listOf<ResultModel>()
-            if (movieData != null) {
-                if (hasOddElement(movieData)) {
-                    val resultModel = removeOddElement(movieData)
-                    movieData = movieData.minus(resultModel)
-                }
-                response = response.plus(movieData)
-            }
-            if (serieData != null) {
-                if (hasOddElement(serieData)) {
-                    val resultModel = removeOddElement(serieData)
-                    serieData = serieData.minus(resultModel)
-                }
-                response = response.plus(serieData)
+            val movieResponse = repository.searchByQuery(query, currentPage)
+            if (movieResponse.isEmpty()) {
+                return LoadResult.Page(
+                    data = emptyList(),
+                    prevKey = null,
+                    nextKey = null
+                )
             }
 
+            val movieData = movieResponse[0].results
+            val serieData = movieResponse[1].results
+
+            val response = mutableListOf<ResultModel>()
+            response.addAll(movieData)
+            response.addAll(serieData)
+            response.sortBy { it.title }
+            if (hasOddElement(response)) {
+                val resultModel = removeOddElement(response)
+                response.remove(resultModel)
+            }
             LoadResult.Page(
                 data = response,
                 prevKey = if (currentPage == 1) null else currentPage - 1,
-                nextKey = if (movieData?.isEmpty() == true) null else currentPage + 1
+                nextKey = if (movieData.isEmpty() && serieData.isEmpty()) null else currentPage + 1
             )
         } catch (e: IOException) {
             LoadResult.Error(e)
