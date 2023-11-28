@@ -43,7 +43,7 @@ internal class MainViewModelTest {
 
         coEvery { repository.moviesTopRated() } returns MovieResult(movieTopRated)
         coEvery { repository.seriesTopRated() } returns MovieResult(serieTopRated)
-        coEvery { repository.getPopularMovies() } returns MovieResult(movieCarousel)
+        coEvery { repository.popularMovies() } returns MovieResult(movieCarousel)
 
         mainViewModel.onCreate()
 
@@ -58,7 +58,7 @@ internal class MainViewModelTest {
 
         coEvery { repository.moviesTopRated() } returns null
         coEvery { repository.seriesTopRated() } returns null
-        coEvery { repository.getPopularMovies() } returns null
+        coEvery { repository.popularMovies() } returns null
 
         mainViewModel.onCreate()
 

@@ -69,7 +69,7 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
 
                 },
                 async {
-                    val response = repository.getPopularMovies()
+                    val response = repository.popularMovies()
                     movieCarousel = response?.results!!
                     Log.d("pepe", movieCarousel.size.toString())
 
