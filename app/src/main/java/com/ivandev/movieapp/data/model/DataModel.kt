@@ -30,7 +30,7 @@ sealed class DataModel {
                 id = id,
                 poster_path = poster_path ?: "",
                 title = title,
-                type = MovieEnum.Serie
+                type = MovieEnum.SERIE
             )
         }
     }
