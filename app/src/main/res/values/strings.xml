@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Puno</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="app_name" translatable="false">Movie App</string>
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="api_key" translatable="false">2866e74fe4d2c2e7d7b08e997f990809</string>
 
@@ -15,6 +14,5 @@
     <string name="type_serie">Serie</string>
     <string name="image_detail">Response image</string>
     <string name="retry">Retry</string>
-    <string name="error">Error</string>
-    <string name="no_connection_message">No connection</string>
+    <string name="connection_error_message">An error has occurred</string>
 </resources>
