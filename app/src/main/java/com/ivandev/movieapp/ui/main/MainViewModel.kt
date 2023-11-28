@@ -1,11 +1,11 @@
 package com.ivandev.movieapp.ui.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.ivandev.movieapp.core.paging.MoviePagingSource
 import com.ivandev.movieapp.domain.Repository
@@ -13,26 +13,23 @@ import com.ivandev.movieapp.domain.model.ResultModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
-    private val _repositoryResponseReady = MutableLiveData<Boolean>()
-    val repositoryResponseReady: LiveData<Boolean>
-        get() = _repositoryResponseReady
-
-    private val _topRatedMovies = MutableLiveData<List<ResultModel>>()
-    val topRatedMovies: LiveData<List<ResultModel>>
-        get() = _topRatedMovies
-
-    private val _topRatedSeries = MutableLiveData<List<ResultModel>>()
-    val topRatedSeries: LiveData<List<ResultModel>>
-        get() = _topRatedSeries
-
-    private val _movieCarousel = MutableLiveData<List<ResultModel>>()
-    val movieCarousel: LiveData<List<ResultModel>>
-        get() = _movieCarousel
+    private lateinit var page: Flow<PagingData<ResultModel>>
+    private val _mainState = MutableStateFlow<MainState>(MainState.Loading)
+    val mainState: StateFlow<MainState>
+        get() = _mainState
+    var topRatedMovies = listOf<ResultModel>()
+    var topRatedSeries = listOf<ResultModel>()
+    var movieCarousel = listOf<ResultModel>()
+    var searchAdapterPosition = 0
+    private var query = ""
 
     private var moviePagingSource: MoviePagingSource? = null
         get() {
@@ -42,42 +39,44 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
             return field
         }
 
-    val pager = Pager(
-        PagingConfig(
-            pageSize = 40,
-            maxSize = 120,
-            enablePlaceholders = false
-        )
-    ) {
-        moviePagingSource!!
-    }.flow.cachedIn(viewModelScope)
-
-    var searchAdapterPosition = 0
-    var fetchAgain = false
-    var query = ""
+    fun getPager(): Flow<PagingData<ResultModel>> {
+        if (::page.isInitialized) return page
+        page = Pager(
+            PagingConfig(
+                pageSize = 40,
+                maxSize = 120,
+                enablePlaceholders = false
+            )
+        ) {
+            moviePagingSource!!
+        }.flow.cachedIn(viewModelScope)
+        return page
+    }
 
     fun onCreate() {
-        _repositoryResponseReady.postValue(false)
         viewModelScope.launch {
+            _mainState.value = MainState.Loading
             val deferreds = listOf(
                 async {
                     val response = repository.moviesTopRated()
-                    //MovieProvider.topRatedMovies = response?.results ?: emptyList()
-                    _topRatedMovies.postValue(response?.results ?: emptyList())
+                    topRatedMovies = response?.results!!
+                    Log.d("pepe", topRatedMovies.size.toString())
                 },
                 async {
                     val response = repository.seriesTopRated()
-                    //MovieProvider.topRatedSeries = response?.results ?: emptyList()
-                    _topRatedSeries.postValue(response?.results ?: emptyList())
+                    topRatedSeries = response?.results!!
+                    Log.d("pepe", topRatedSeries.size.toString())
+
                 },
                 async {
                     val response = repository.getPopularMovies()
-                    //MovieProvider.movieCarousel = response?.results ?: emptyList()
-                    _movieCarousel.postValue(response?.results ?: emptyList())
+                    movieCarousel = response?.results!!
+                    Log.d("pepe", movieCarousel.size.toString())
+
                 }
             )
             deferreds.awaitAll()
-            _repositoryResponseReady.postValue(true)
+            _mainState.value = MainState.Finished
         }
     }
 
