@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.SearchView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -15,8 +14,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ivandev.movieapp.R
-import com.ivandev.movieapp.core.common.CheckNetwork
 import com.ivandev.movieapp.core.paging.LoaderAdapter
 import com.ivandev.movieapp.databinding.FragmentSearchBinding
 import com.ivandev.movieapp.ui.main.MainViewModel
@@ -49,7 +46,7 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
-            searchViewModel.pager.collectLatest {
+            searchViewModel.getPager().collectLatest {
                 pagingSearchAdapter.submitData(it)
             }
         }
@@ -58,14 +55,6 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onStart() {
         val targetPosition = searchViewModel.searchAdapterPosition
         paginedRecyclerView.scrollToPosition(targetPosition)
-        if (!CheckNetwork.isConected(requireContext())) {
-            searchViewModel.searchByQuery("")
-        } else {
-            if (searchViewModel.fetchAgain) {
-                searchViewModel.searchByQuery(searchViewModel.query)
-                searchViewModel.fetchAgain = false
-            }
-        }
         super.onStart()
     }
 
@@ -121,12 +110,24 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
                 && it.append.endOfPaginationReached
                 && pagingSearchAdapter.itemCount < 1
             ) {
-                textViewNoResults.isVisible = true
-                paginedRecyclerView.isVisible = false
+                showTextViewNoResults()
+                hiddePaginedRecyclerView()
             } else {
-                textViewNoResults.isVisible = false
+                hiddeTextViewNoResults()
             }
         }
+    }
+
+    private fun hiddePaginedRecyclerView() {
+        paginedRecyclerView.isVisible = false
+    }
+
+    private fun hiddeTextViewNoResults() {
+        textViewNoResults.isVisible = false
+    }
+
+    private fun showTextViewNoResults() {
+        textViewNoResults.isVisible = true
     }
 
     private fun setPagingSearchAdapter() {
@@ -158,19 +159,9 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        if (CheckNetwork.isConected(requireContext())) {
-            searchViewModel.cancelPagingSource()
-            paginedRecyclerView.scrollToPosition(0)
-            val searchQuery = query ?: ""
-            searchViewModel.searchByQuery(searchQuery)
-        } else {
-            searchViewModel.searchByQuery("")
-            Toast.makeText(
-                requireContext(),
-                activity?.getString(R.string.no_connection_message),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+        searchViewModel.cancelPagingSource()
+        paginedRecyclerView.scrollToPosition(0)
+        searchViewModel.searchByQuery(query ?: "")
         return false
     }
 
@@ -181,14 +172,4 @@ class SearchFragment : Fragment(), SearchView.OnQueryTextListener {
         searchViewModel.searchAdapterPosition = targetPosition
         super.onStop()
     }
-
-    override fun onDestroy() {
-        if (!CheckNetwork.isConected(requireContext())) {
-            searchViewModel.cancelPagingSource()
-            searchViewModel.searchAdapterPosition = 0
-            searchViewModel.fetchAgain = true
-        }
-        super.onDestroy()
-    }
-
 }
