@@ -6,9 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.ivandev.movieapp.core.adapter.Adapter
@@ -16,9 +20,11 @@ import com.ivandev.movieapp.core.adapter.FragmentAdapter
 import com.ivandev.movieapp.core.common.CheckNetwork
 import com.ivandev.movieapp.databinding.FragmentHomeBinding
 import com.ivandev.movieapp.domain.model.ResultModel
+import com.ivandev.movieapp.ui.main.MainState
 import com.ivandev.movieapp.ui.main.MainViewModel
 import com.ivandev.movieapp.ui.main.fragment.common.SeeDetail
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.*
 
 @AndroidEntryPoint
@@ -30,10 +36,13 @@ class HomeFragment : Fragment() {
     private lateinit var movieRecyclerView: RecyclerView
     private lateinit var serieRecyclerView: RecyclerView
     private lateinit var btnNoConnection: Button
-    private val mainVieModel: MainViewModel by activityViewModels()
+    private lateinit var noConnectionLayout: LinearLayout
+    private lateinit var progressBar: ProgressBar
+    private lateinit var nestedScrollViewHome: NestedScrollView
     private var currentCoruselPosition = CURRENT_CAROUSEL_POSITION
     private var fragmentAdapter: FragmentAdapter? = null
     private var timer: Timer? = null
+    private val mainVieModel: MainViewModel by activityViewModels()
 
     companion object {
         const val CURRENT_CAROUSEL_POSITION = 1
@@ -49,6 +58,7 @@ class HomeFragment : Fragment() {
         }
         inflateView(inflater, container)
         initUI()
+        initUIState()
         return binding.root
     }
 
@@ -62,7 +72,41 @@ class HomeFragment : Fragment() {
         setViewPager()
         setMovieAdapter()
         setSerieAdapter()
+    }
+
+    private fun setBinding() {
+        viewPager2 = binding.viewPager2
+        movieRecyclerView = binding.rvMovies
+        serieRecyclerView = binding.rvSeries
+        nestedScrollViewHome = binding.nsvHome
+        btnNoConnection = binding.noConnection.btnNoConnection
+        noConnectionLayout = binding.noConnection.llNoConnection
+        progressBar = binding.pb
+    }
+
+    private fun initUIState() {
+        lifecycleScope.launch {
+            mainVieModel.mainState.collect {
+                when (it) {
+                    MainState.Loading -> stateLoading()
+                    MainState.Finished -> stateFinished()
+                }
+            }
+        }
+    }
+
+    private fun stateFinished() {
+        hiddeProgressBar()
         checkNetwork()
+    }
+
+    private fun stateLoading() {
+        showProgressBar()
+        if (!CheckNetwork.isConected(requireContext())) {
+            showNoConnectionLayout()
+            hiddeProgressBar()
+            hiddeNestedScrollViewHome()
+        }
     }
 
     private fun btnNoConnectionListener() {
@@ -74,23 +118,24 @@ class HomeFragment : Fragment() {
     private fun checkNetwork() {
         val isConnected = CheckNetwork.isConected(requireContext())
         if (isConnected) {
-            dataResponseObserver()
-            binding.noConnection.llNoConnection.isVisible = false
-        } else {
-            binding.nsvMain.visibility = View.INVISIBLE
-            binding.noConnection.llNoConnection.isVisible = true
+            setAdapters()
+            createModelCarousel()
+            setFragmentadapter()
+            setViewPagerListener()
+            initAutoSlide()
+            hiddeNoConnectionLayout()
         }
     }
 
     private fun noConnectionListener() {
-        checkNetwork()
+        getDataAgain()
     }
 
-    private fun setBinding() {
-        viewPager2 = binding.viewPager2
-        movieRecyclerView = binding.rvMovies
-        serieRecyclerView = binding.rvSeries
-        btnNoConnection = binding.noConnection.btnNoConnection
+    private fun getDataAgain() {
+        if (!CheckNetwork.isConected(requireContext())) return
+        mainVieModel.onCreate()
+        showProgressBar()
+        hiddeNoConnectionLayout()
     }
 
     private fun setSerieAdapter() {
@@ -111,52 +156,47 @@ class HomeFragment : Fragment() {
         movieRecyclerView.adapter = movieAdapter
     }
 
-    private fun dataResponseObserver() {
-        mainVieModel.onCreate()
-        binding.pb.isVisible = true
-        movieObserver()
-        serieObserver()
-        movieCarouselObserver()
-        responseReadyObserver()
+    private fun setAdapters() {
+        updateMovieAdapter()
+        updateSerieAdapter()
     }
 
-    private fun responseReadyObserver() {
-        mainVieModel.repositoryResponseReady.observe(viewLifecycleOwner) {
-            if (it) {
-                binding.pb.isVisible = false
-                binding.nsvMain.isVisible = true
-                initTimerAutoSlide()
-                mainVieModel.repositoryResponseReady.removeObservers(viewLifecycleOwner)
-            }
+    private fun initAutoSlide() {
+        if (mainVieModel.mainState.value is MainState.Finished) {
+            hiddeProgressBar()
+            showNestedScrollViewHome()
+            initTimerAutoSlide()
         }
     }
 
-    private fun movieCarouselObserver() {
-        mainVieModel.movieCarousel.observe(viewLifecycleOwner) { resultModelList ->
-            if (resultModelList.isNotEmpty()) {
-                createModelCarousel(resultModelList as MutableList<ResultModel>)
-                setFragmentadapter(resultModelList)
-                setViewPagerListener(resultModelList)
-                mainVieModel.movieCarousel.removeObservers(viewLifecycleOwner)
-            }
-        }
+    private fun showNestedScrollViewHome() {
+        nestedScrollViewHome.isVisible = true
     }
 
-    private fun serieObserver() {
-        mainVieModel.topRatedSeries.observe(viewLifecycleOwner) {
-            updateSerieAdapter(it)
-        }
+    private fun hiddeNestedScrollViewHome() {
+        nestedScrollViewHome.isVisible = false
     }
 
-    private fun movieObserver() {
-        mainVieModel.topRatedMovies.observe(viewLifecycleOwner) {
-            updateMovieAdapter(it)
-        }
+    private fun showProgressBar() {
+        progressBar.isVisible = true
+    }
+
+    private fun hiddeProgressBar() {
+        progressBar.isVisible = false
+    }
+
+    private fun showNoConnectionLayout() {
+        noConnectionLayout.isVisible = true
+    }
+
+    private fun hiddeNoConnectionLayout() {
+        noConnectionLayout.isVisible = false
     }
 
     /** Add two DataLoading.Movie object to movieList
     to model the circular carousel. */
-    private fun createModelCarousel(list: MutableList<ResultModel>) {
+    private fun createModelCarousel() {
+        val list = mainVieModel.movieCarousel as MutableList
         val mo1 = list[0]
         val mo2 = list[1]
         list.add(mo1)
@@ -164,19 +204,22 @@ class HomeFragment : Fragment() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateSerieAdapter(resultModels: List<ResultModel>) {
-        serieAdapter.movieList = resultModels
+    private fun updateSerieAdapter() {
+        val list = mainVieModel.topRatedSeries
+        serieAdapter.movieList = list
         serieAdapter.notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateMovieAdapter(resultModels: List<ResultModel>) {
-        movieAdapter.movieList = resultModels
+    private fun updateMovieAdapter() {
+        val list = mainVieModel.topRatedMovies
+        movieAdapter.movieList = list
         movieAdapter.notifyDataSetChanged()
     }
 
-    private fun setFragmentadapter(mv: List<ResultModel>) {
-        fragmentAdapter = FragmentAdapter(mv, childFragmentManager, lifecycle)
+    private fun setFragmentadapter() {
+        val list = mainVieModel.movieCarousel
+        fragmentAdapter = FragmentAdapter(list, childFragmentManager, lifecycle)
         viewPager2.adapter = fragmentAdapter
     }
 
@@ -206,8 +249,8 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        val repositoryResponseReady = mainVieModel.repositoryResponseReady.value
-        if (timer == null && repositoryResponseReady == true) {
+        val repositoryResponseReady = mainVieModel.mainState.value
+        if (timer == null && repositoryResponseReady is MainState.Finished) {
             initTimerAutoSlide()
         }
     }
@@ -231,8 +274,8 @@ class HomeFragment : Fragment() {
     /** Ensure that the current page of the ViewPager2 is completely
      * set to the screen in case of a bug */
     private fun setCurrentItemOnScreen() {
-        viewPager2.setCurrentItem(currentCoruselPosition - 1, false)
         viewPager2.setCurrentItem(currentCoruselPosition + 1, false)
+        viewPager2.setCurrentItem(currentCoruselPosition - 1, false)
     }
 
     private fun cancelTimer() {
@@ -243,7 +286,8 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setViewPagerListener(list: List<ResultModel>) {
+    private fun setViewPagerListener() {
+        val list = mainVieModel.movieCarousel
         viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
 
             override fun onPageSelected(position: Int) {
@@ -285,5 +329,4 @@ class HomeFragment : Fragment() {
             viewPager2.isUserInputEnabled = true
         }
     }
-
 }
