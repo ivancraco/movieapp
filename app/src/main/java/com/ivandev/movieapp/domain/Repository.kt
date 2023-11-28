@@ -7,8 +7,7 @@ interface Repository {
     suspend fun getPopularMovies(): MovieResult?
     suspend fun seriesTopRated(): MovieResult?
     suspend fun moviesTopRated(): MovieResult?
-    suspend fun getMovieByQuery(query: String, page: Int): MovieResult?
-    suspend fun getSerieByQuery(query: String, page: Int): MovieResult?
+    suspend fun searchByQuery(query: String, page: Int): List<MovieResult>
     suspend fun getMovieById(id: Int, language: String): DetailModel?
     suspend fun getSerieById(id: Int, language: String): DetailModel?
 }
