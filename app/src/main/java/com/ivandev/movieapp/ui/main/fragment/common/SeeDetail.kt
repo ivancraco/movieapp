@@ -12,8 +12,8 @@ object SeeDetail {
             MovieEnum.MOVIE -> {
                 startDetailActivity(context, result.id, MovieEnum.MOVIE.type)
             }
-            MovieEnum.Serie -> {
-                startDetailActivity(context, result.id, MovieEnum.Serie.type)
+            MovieEnum.SERIE -> {
+                startDetailActivity(context, result.id, MovieEnum.SERIE.type)
             }
         }
     }
@@ -21,7 +21,7 @@ object SeeDetail {
     private fun startDetailActivity(context: Context, id: Int, movieEnum: String) {
         val intent = Intent(context, DetailActivity::class.java)
         intent.putExtra(DetailActivity.SEARCH_ID, id)
-        intent.putExtra(DetailActivity.TYPESEARCH, movieEnum)
+        intent.putExtra(DetailActivity.SEARCH_MODEL, movieEnum)
         context.startActivity(intent)
     }
 }
