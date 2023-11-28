@@ -24,7 +24,7 @@ class SearchViewHolder(view: View, private val onSelectedItem: (ResultModel) -> 
                 binding.tvType.text = binding.tvType.context.getString(R.string.type_movie)
 
             }
-            MovieEnum.Serie -> {
+            MovieEnum.SERIE -> {
                 binding.tvType.text = binding.tvType.context.getString(R.string.type_serie)
             }
         }
