@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:textSize="12sp"
             android:textColor="@color/primary_color_text"
-            android:text="@string/no_connection_message" />
+            android:text="@string/connection_error_message" />
 
         <Button
             android:id="@+id/btnNoConnection"
