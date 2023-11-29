@@ -65,7 +65,6 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
 
     implementation 'com.github.bumptech.glide:glide:4.13.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.2'
 
     implementation("androidx.paging:paging-runtime-ktx:3.1.1")
