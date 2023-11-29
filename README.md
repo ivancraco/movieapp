@@ -4,3 +4,4 @@
 <h2>Funcionalidades</h2>
 <p>&#9989 Realizar búsquedas</p>
 <p>&#9989 Ver detalles</p>
+<iframe src="https://appetize.io/embed/z6l3wclchwednxvooi6geoojn4" width="300px" height="600px" frameborder="0" scrolling="no"></iframe>
