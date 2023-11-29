@@ -4,4 +4,8 @@
 <h2>Funcionalidades</h2>
 <p>&#9989 Realizar búsquedas</p>
 <p>&#9989 Ver detalles</p>
-<iframe src="https://appetize.io/embed/z6l3wclchwednxvooi6geoojn4" width="300px" height="600px" frameborder="0" scrolling="no"></iframe>
+<p>Puede probar un ejemplo online en vivo <a target="_blank" href="https://appetize.io/embed/z6l3wclchwednxvooi6geoojn4">aquí</a>.</p>
+<h2>Api</h2>
+<a target="_blank" href="https://www.themoviedb.org/">themoviedb.org</a>
+<h2>Autor</h2>
+<span>Iván Craco</span>
