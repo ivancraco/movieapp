@@ -4,8 +4,8 @@
 <h2>Funcionalidades</h2>
 <p>&#9989 Realizar búsquedas</p>
 <p>&#9989 Ver detalles</p>
-<p>Puede probar un ejemplo online en vivo <a target="_blank" href="https://appetize.io/embed/z6l3wclchwednxvooi6geoojn4">aquí</a>.</p>
+<p>Puede probar un ejemplo online en vivo <a href="https://appetize.io/embed/z6l3wclchwednxvooi6geoojn4" target="_blank">aquí</a>.</p>
 <h2>Api</h2>
-<a target="_blank" href="https://www.themoviedb.org/">themoviedb.org</a>
+<a href="https://www.themoviedb.org/" target="_blank">themoviedb.org</a>
 <h2>Autor</h2>
 <span>Iván Craco</span>
