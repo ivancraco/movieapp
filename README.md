@@ -4,7 +4,7 @@
 <h2>Funcionalidades</h2>
 <p>&#9989 Realizar búsquedas</p>
 <p>&#9989 Ver detalles</p>
-<p>Puede probar un ejemplo online en vivo <a href="https://appetize.io/embed/jvh6nmhp6osps2twv3tsrrbrym" target="_blank">aquí</a>.</p>
+<p>Prueba la aplicación en un emulador de la web <a href="https://appetize.io/embed/jvh6nmhp6osps2twv3tsrrbrym" target="_blank">aquí</a>.</p>
 <h2>Api</h2>
 <a href="https://www.themoviedb.org/" target="_blank">themoviedb.org</a>
 <h2>Autor</h2>
