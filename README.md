@@ -1,11 +1,11 @@
 <h1>Movie App</h1>
-<h2>Descripción del proyecto</h2>
-<p>Aplicación que permite realizar búsquedas de películas y series. Se puede ver el detalle de cada una. La pantalla inicial muestra las  películas y series más vistas, con un un carousel (con auto slide) de películas populares. La sección de búsqueda incluye la librería de Paging3 para gestionar la carga de datos en páginas de la api utilizada.</p>
-<h2>Funcionalidades</h2>
-<p>&#9989 Realizar búsquedas</p>
-<p>&#9989 Ver detalles</p>
-<p>Prueba la aplicación en un emulador de la web <a href="https://appetize.io/embed/jvh6nmhp6osps2twv3tsrrbrym" target="_blank">aquí</a>.</p>
+<h2>Project description</h2>
+<p>Application that allows you to search for movies and series. You can see the details of each one. The initial screen shows the most viewed movies and series, with a carousel (with auto slider) of popular movies. The search section includes the Paging3 library to manage the loading of data into pages of the used API.</p>
+<h2>operations that can be performed</h2>
+<p>&#9989 Search for movies and series </p>
+<p>&#9989 See details</p>
+<p>Try the app on a web emulator <a href="https://appetize.io/embed/jvh6nmhp6osps2twv3tsrrbrym" target="_blank">here</a>.</p>
 <h2>Api</h2>
 <a href="https://www.themoviedb.org/" target="_blank">themoviedb.org</a>
-<h2>Autor</h2>
+<h2>Author</h2>
 <span>Iván Craco</span>
